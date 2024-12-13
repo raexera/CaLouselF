@@ -5,11 +5,7 @@
  * 
  */
 module CaLouselF {
-//	opens main;
-	opens controller;
-	opens model;
-	opens views.auth;
-	opens database;
+	opens main;
 
 	requires java.sql;
 	requires javafx.graphics;
