@@ -16,7 +16,6 @@ public class User {
 		this.phoneNumber = phoneNumber;
 		this.address = address;
 		this.role = role;
-		this.createdAt = createdAt;
 	}
 
 	public int getUserID() {

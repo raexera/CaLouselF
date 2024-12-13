@@ -12,7 +12,6 @@ public class Transaction {
 		this.buyerID = buyerID;
 		this.itemID = itemID;
 		this.totalPrice = totalPrice;
-		this.createdAt = createdAt;
 	}
 
 	public int getTransactionID() {
