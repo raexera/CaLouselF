@@ -1,7 +1,5 @@
 package model;
 
-import java.sql.Timestamp;
-
 public class User {
 	private int userID;
 	private String username;
@@ -9,10 +7,8 @@ public class User {
 	private String phoneNumber;
 	private String address;
 	private String role;
-	private Timestamp createdAt;
 
-	public User(int userID, String username, String passwordHash, String phoneNumber, String address, String role,
-			Timestamp createdAt) {
+	public User(int userID, String username, String passwordHash, String phoneNumber, String address, String role) {
 		super();
 		this.userID = userID;
 		this.username = username;
@@ -20,7 +16,6 @@ public class User {
 		this.phoneNumber = phoneNumber;
 		this.address = address;
 		this.role = role;
-		this.createdAt = createdAt;
 	}
 
 	public int getUserID() {
@@ -69,13 +64,5 @@ public class User {
 
 	public void setRole(String role) {
 		this.role = role;
-	}
-
-	public Timestamp getCreatedAt() {
-		return createdAt;
-	}
-
-	public void setCreatedAt(Timestamp createdAt) {
-		this.createdAt = createdAt;
 	}
 }
