@@ -1,7 +1,5 @@
 package model;
 
-import java.sql.Timestamp;
-
 public class Item {
 	private int itemID;
 	private int sellerID;
@@ -11,10 +9,9 @@ public class Item {
 	private double price;
 	private String status;
 	private String declineReason;
-	private Timestamp createdAt;
 
 	public Item(int itemID, int sellerID, String itemName, String category, String size, double price, String status,
-			String declineReason, Timestamp createdAt) {
+			String declineReason) {
 		super();
 		this.itemID = itemID;
 		this.sellerID = sellerID;
@@ -24,7 +21,6 @@ public class Item {
 		this.price = price;
 		this.status = status;
 		this.declineReason = declineReason;
-		this.createdAt = createdAt;
 	}
 
 	public int getItemID() {
@@ -89,13 +85,5 @@ public class Item {
 
 	public void setDeclineReason(String declineReason) {
 		this.declineReason = declineReason;
-	}
-
-	public Timestamp getCreatedAt() {
-		return createdAt;
-	}
-
-	public void setCreatedAt(Timestamp createdAt) {
-		this.createdAt = createdAt;
 	}
 }
