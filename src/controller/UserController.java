@@ -9,11 +9,18 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class UserController {
+	private static UserController instance;
+	private final DatabaseConnector db;
 
-	private DatabaseConnector db;
-
-	public UserController() {
+	private UserController() {
 		db = DatabaseConnector.getInstance();
+	}
+
+	public static UserController getInstance() {
+		if (instance == null) {
+			instance = new UserController();
+		}
+		return instance;
 	}
 
 	public Map<String, String> registerUser(String username, String password, String phoneNumber, String address,
