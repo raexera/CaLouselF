@@ -1,9 +1,3 @@
-/**
- * 
- */
-/**
- * 
- */
 module CaLouselF {
 //	opens main;
 	opens controller;

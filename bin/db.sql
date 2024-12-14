@@ -8,8 +8,7 @@ CREATE TABLE Users (
     PasswordHash VARCHAR(255) NOT NULL,
     PhoneNumber VARCHAR(15) NOT NULL,
     Address TEXT NOT NULL,
-    Role ENUM('Buyer', 'Seller') NOT NULL,
-    CreatedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    Role ENUM('Buyer', 'Seller') NOT NULL
 );
 
 CREATE TABLE Items (
@@ -21,7 +20,6 @@ CREATE TABLE Items (
     Price DECIMAL(10, 2) NOT NULL,
     Status ENUM('Pending', 'Approved', 'Declined') DEFAULT 'Pending',
     DeclineReason TEXT,
-    CreatedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (SellerID) REFERENCES Users(UserID)
 );
 
@@ -29,7 +27,6 @@ CREATE TABLE Wishlist (
     WishlistID INT AUTO_INCREMENT PRIMARY KEY,
     BuyerID INT NOT NULL,
     ItemID INT NOT NULL,
-    CreatedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (BuyerID) REFERENCES Users(UserID),
     FOREIGN KEY (ItemID) REFERENCES Items(ItemID)
 );
@@ -39,7 +36,6 @@ CREATE TABLE Transactions (
     BuyerID INT NOT NULL,
     ItemID INT NOT NULL,
     TotalPrice DECIMAL(10, 2) NOT NULL,
-    CreatedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (BuyerID) REFERENCES Users(UserID),
     FOREIGN KEY (ItemID) REFERENCES Items(ItemID)
 );
@@ -51,7 +47,6 @@ CREATE TABLE Offers (
     OfferPrice DECIMAL(10, 2) NOT NULL,
     Status ENUM('Pending', 'Accepted', 'Declined') DEFAULT 'Pending',
     DeclineReason TEXT,
-    CreatedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (ItemID) REFERENCES Items(ItemID),
     FOREIGN KEY (BuyerID) REFERENCES Users(UserID)
 );

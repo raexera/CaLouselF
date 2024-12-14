@@ -9,16 +9,22 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class UserController {
+	private static UserController instance;
+	private final DatabaseConnector db;
 
-	private DatabaseConnector db;
-
-	public UserController() {
+	private UserController() {
 		db = DatabaseConnector.getInstance();
 	}
 
-	public Map<String, String> registerUser(String username, String password, String phoneNumber, String address,
-			String role) {
-		Map<String, String> validationErrors = validateRegistration(username, password, phoneNumber, address, role);
+	public static UserController getInstance() {
+		if (instance == null) {
+			instance = new UserController();
+		}
+		return instance;
+	}
+
+	public Map<String, String> registerUser(User user, String password) {
+		Map<String, String> validationErrors = validateRegistration(user, password);
 
 		if (!validationErrors.isEmpty()) {
 			return validationErrors;
@@ -29,8 +35,9 @@ public class UserController {
 			String query = String.format(
 					"INSERT INTO Users (Username, PasswordHash, PhoneNumber, Address, Role) "
 							+ "VALUES ('%s', '%s', '%s', '%s', '%s')",
-					username, hashedPassword, phoneNumber, address, role);
+					user.getUsername(), hashedPassword, user.getPhoneNumber(), user.getAddress(), user.getRole());
 			db.execute(query);
+			System.out.println("User registered successfully.");
 		} catch (Exception e) {
 			validationErrors.put("database", "An error occurred during registration.");
 			e.printStackTrace();
@@ -58,38 +65,33 @@ public class UserController {
 		return null;
 	}
 
-	private Map<String, String> validateRegistration(String username, String password, String phoneNumber,
-			String address, String role) {
+	private Map<String, String> validateRegistration(User user, String password) {
 		Map<String, String> errors = new HashMap<>();
 
-		// Username validation
-		if (username == null || username.trim().isEmpty()) {
+		if (user.getUsername() == null || user.getUsername().trim().isEmpty()) {
 			errors.put("username", "Username cannot be empty.");
-		} else if (username.length() < 3) {
+		} else if (user.getUsername().length() < 3) {
 			errors.put("username", "Username must be at least 3 characters long.");
-		} else if (!isUsernameUnique(username)) {
+		} else if (!isUsernameUnique(user.getUsername())) {
 			errors.put("username", "Username is already taken.");
 		}
 
-		// Password validation
 		if (password == null || password.trim().isEmpty()) {
 			errors.put("password", "Password cannot be empty.");
 		} else if (password.length() < 8 || !containsSpecialCharacter(password)) {
 			errors.put("password", "Password must be at least 8 characters long and include special characters.");
 		}
 
-		// Phone number validation
-		if (phoneNumber == null || !phoneNumber.startsWith("+62") || phoneNumber.length() != 13) {
-			errors.put("phoneNumber", "Phone number must start with +62 and be 10 digits long.");
+		if (user.getPhoneNumber() == null || !user.getPhoneNumber().startsWith("+62")
+				|| user.getPhoneNumber().length() != 13) {
+			errors.put("phoneNumber", "Phone number must start with +62 and be 13 digits long.");
 		}
 
-		// Address validation
-		if (address == null || address.trim().isEmpty()) {
+		if (user.getAddress() == null || user.getAddress().trim().isEmpty()) {
 			errors.put("address", "Address cannot be empty.");
 		}
 
-		// Role validation
-		if (!role.equalsIgnoreCase("Seller") && !role.equalsIgnoreCase("Buyer")) {
+		if (!user.getRole().equalsIgnoreCase("Seller") && !user.getRole().equalsIgnoreCase("Buyer")) {
 			errors.put("role", "Role must be either 'Seller' or 'Buyer'.");
 		}
 
