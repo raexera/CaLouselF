@@ -1,8 +1,12 @@
 package controller;
 
 import database.DatabaseConnector;
+import model.Offer;
+
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 
 public class OfferController {
 	private static OfferController instance;
@@ -19,34 +23,33 @@ public class OfferController {
 		return instance;
 	}
 
-	public void makeOffer(int itemID, int buyerID, double offerPrice) {
-		double highestOffer = getHighestOffer(itemID);
-		if (offerPrice <= highestOffer) {
+	public void makeOffer(Offer offer) {
+		double highestOffer = getHighestOffer(offer.getItemID());
+		if (offer.getOfferPrice() <= highestOffer) {
 			System.out.println("Offer price must be higher than the current highest offer.");
 			return;
 		}
-		String query = String.format("INSERT INTO Offers (ItemID, BuyerID, OfferPrice) VALUES (%d, %d, %.2f)", itemID,
-				buyerID, offerPrice);
+		String query = String.format("INSERT INTO Offers (ItemID, BuyerID, OfferPrice) VALUES (%d, %d, %.2f)",
+				offer.getItemID(), offer.getBuyerID(), offer.getOfferPrice());
 		db.execute(query);
 		System.out.println("Offer submitted successfully.");
 	}
 
-	public void viewOffers(int sellerID) {
-		String query = String
-				.format("SELECT o.OfferID, i.ItemName, i.Category, i.Size, i.Price AS InitialPrice, o.OfferPrice "
-						+ "FROM Offers o JOIN Items i ON o.ItemID = i.ItemID "
-						+ "WHERE i.SellerID = %d AND o.Status = 'Pending'", sellerID);
+	public List<Offer> viewOffers(int sellerID) {
+		String query = String.format(
+				"SELECT o.* FROM Offers o JOIN Items i ON o.ItemID = i.ItemID WHERE i.SellerID = %d AND o.Status = 'Pending'",
+				sellerID);
 		ResultSet rs = db.execQuery(query);
+		List<Offer> offers = new ArrayList<>();
 		try {
 			while (rs.next()) {
-				System.out.printf(
-						"OfferID: %d, Item: %s, Category: %s, Size: %s, Initial Price: %.2f, Offer Price: %.2f%n",
-						rs.getInt("OfferID"), rs.getString("ItemName"), rs.getString("Category"), rs.getString("Size"),
-						rs.getDouble("InitialPrice"), rs.getDouble("OfferPrice"));
+				offers.add(new Offer(rs.getInt("OfferID"), rs.getInt("ItemID"), rs.getInt("BuyerID"),
+						rs.getDouble("OfferPrice"), rs.getString("Status"), rs.getString("DeclineReason")));
 			}
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
+		return offers;
 	}
 
 	public void acceptOffer(int offerID) {
@@ -71,8 +74,9 @@ public class OfferController {
 		String query = String.format("SELECT MAX(OfferPrice) AS HighestOffer FROM Offers WHERE ItemID = %d", itemID);
 		ResultSet rs = db.execQuery(query);
 		try {
-			if (rs.next())
+			if (rs.next()) {
 				return rs.getDouble("HighestOffer");
+			}
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
