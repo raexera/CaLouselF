@@ -11,12 +11,10 @@ import model.User;
 
 public class LoginView extends Application {
 
-	private UserController userController;
-
 	@Override
 	public void start(Stage primaryStage) {
 
-		userController = new UserController();
+		UserController userController = UserController.getInstance();
 
 		Label title = new Label("CaLouselF");
 		title.setStyle(
@@ -38,7 +36,6 @@ public class LoginView extends Application {
 		Hyperlink registerLink = new Hyperlink("Register");
 		registerLink.setStyle("-fx-text-fill: blue;");
 
-		// Layout
 		VBox layout = new VBox(14, title, subtitle, usernameLbl, usernameTf, passwordLbl, passwordPf, loginBtn,
 				errorLbl, registerLink);
 		layout.setAlignment(Pos.CENTER);
@@ -60,17 +57,20 @@ public class LoginView extends Application {
 			} else {
 				errorLbl.setText("Login Successful!");
 				System.out.println("Logged in as: " + user.getUsername() + " (" + user.getRole() + ")");
-				// TODO : navigate ke halaman berikutnya (kalau perlu)
+				// TODO: Tambahkan navigasi ke dashboard (ONPROG)
 			}
 		});
 
-		
 		registerLink.setOnAction(e -> {
-			System.out.println("Redirect to Register Page!");
+			try {
+				new RegisterView().start(primaryStage); 
+			} catch (Exception ex) {
+				ex.printStackTrace();
+			}
 		});
 
-		
-		Scene scene = new Scene(layout, 600, 400); // adjust kl mau kecil / besar
+	
+		Scene scene = new Scene(layout, 600, 400); // adjust ukuran jika perlu
 		primaryStage.setTitle("Login Page");
 		primaryStage.setScene(scene);
 		primaryStage.show();
