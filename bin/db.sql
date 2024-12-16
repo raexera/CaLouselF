@@ -8,7 +8,7 @@ CREATE TABLE Users (
     PasswordHash VARCHAR(255) NOT NULL,
     PhoneNumber VARCHAR(15) NOT NULL,
     Address TEXT NOT NULL,
-    Role ENUM('Buyer', 'Seller') NOT NULL,
+    Role ENUM('Buyer', 'Seller') NOT NULL
 );
 
 CREATE TABLE Items (
