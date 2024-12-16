@@ -8,6 +8,8 @@ import javafx.scene.control.*;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import model.User;
+import views.homepage.AdminView;
+import views.homepage.SellerView;
 
 public class LoginView extends Application {
 
@@ -55,21 +57,34 @@ public class LoginView extends Application {
 			if (user == null) {
 				errorLbl.setText("Invalid username or password!");
 			} else {
-				errorLbl.setText("Login Successful!");
+
 				System.out.println("Logged in as: " + user.getUsername() + " (" + user.getRole() + ")");
-				// TODO: Tambahkan navigasi ke dashboard (ONPROG)
+
+				if ("Admin".equalsIgnoreCase(user.getRole())) {
+
+					AdminView adminView = new AdminView(primaryStage);
+					primaryStage.setScene(adminView.getScene());
+					primaryStage.show();
+				} else if ("Seller".equalsIgnoreCase(user.getRole())) {
+
+					SellerView sellerView = new SellerView(primaryStage, user.getUserID());
+					primaryStage.setScene(sellerView.getScene());
+					primaryStage.show();
+				} else {
+					// TODO: buyer disini
+
+				}
 			}
 		});
 
 		registerLink.setOnAction(e -> {
 			try {
-				new RegisterView().start(primaryStage); 
+				new RegisterView().start(primaryStage);
 			} catch (Exception ex) {
 				ex.printStackTrace();
 			}
 		});
 
-	
 		Scene scene = new Scene(layout, 600, 400); // adjust ukuran jika perlu
 		primaryStage.setTitle("Login Page");
 		primaryStage.setScene(scene);

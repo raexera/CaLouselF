@@ -77,7 +77,6 @@ public class RegisterView extends Application {
 			String address = addressTf.getText().trim();
 			String role = roleCb.getValue();
 
-			// validate
 			if (username.isEmpty() || password.isEmpty() || phoneNumber.isEmpty() || address.isEmpty()) {
 				errorLbl.setText("All fields must be filled.");
 				return;
