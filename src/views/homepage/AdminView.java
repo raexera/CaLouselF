@@ -7,6 +7,7 @@ import javafx.scene.control.*;
 import javafx.scene.layout.*;
 import javafx.stage.Stage;
 import controller.ItemController;
+import controller.UserController;
 import database.DatabaseConnector;
 import model.Item;
 import views.auth.LoginView;
@@ -20,6 +21,9 @@ public class AdminView {
 	private VBox mainContainer;
 	private TableView<Item> itemTable;
 	private ItemController itemController;
+	// panggil user controller buat pake method logout
+	private UserController userController;
+	
 
 	public AdminView(Stage stage) {
 		this.stage = stage;

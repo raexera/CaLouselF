@@ -9,6 +9,7 @@ import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import model.User;
 import views.homepage.AdminView;
+import views.homepage.BuyerView;
 import views.homepage.SellerView;
 
 public class LoginView extends Application {
@@ -71,7 +72,9 @@ public class LoginView extends Application {
 					primaryStage.setScene(sellerView.getScene());
 					primaryStage.show();
 				} else {
-					// TODO: buyer disini
+					BuyerView buyerView = new BuyerView(primaryStage, user.getUserID());
+					primaryStage.setScene(buyerView.getScene());
+					primaryStage.show();
 
 				}
 			}
