@@ -12,7 +12,7 @@ public class UserController {
 	private static UserController instance;
 	private final DatabaseConnector db;
 
-	private UserController() {
+	public UserController() {
 		db = DatabaseConnector.getInstance();
 	}
 
