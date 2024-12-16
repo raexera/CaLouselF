@@ -49,21 +49,44 @@ public class ItemController {
 		db.execute(query);
 		System.out.println("Item deleted successfully.");
 	}
-
-	public List<Item> viewItems() {
-		String query = "SELECT * FROM Items WHERE Status = 'Approved'";
-		ResultSet rs = db.execQuery(query);
-		List<Item> items = new ArrayList<>();
-		try {
-			while (rs.next()) {
-				items.add(new Item(rs.getInt("ItemID"), rs.getInt("SellerID"), rs.getString("ItemName"),
-						rs.getString("Category"), rs.getString("Size"), rs.getDouble("Price"), rs.getString("Status"),
-						rs.getString("DeclineReason")));
-			}
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
-		return items;
+	
+	public List<Item> viewPendingItems() {
+	    String query = "SELECT * FROM Items WHERE Status = 'Pending'";
+	    ResultSet rs = db.execQuery(query);
+	    List<Item> items = new ArrayList<>();
+	    try {
+	        while (rs.next()) {
+	            items.add(new Item(
+	                rs.getInt("ItemID"),
+	                rs.getInt("SellerID"),
+	                rs.getString("ItemName"),
+	                rs.getString("Category"),
+	                rs.getString("Size"),
+	                rs.getDouble("Price"),
+	                rs.getString("Status"),
+	                rs.getString("DeclineReason")
+	            ));
+	        }
+	    } catch (SQLException e) {
+	        e.printStackTrace();
+	    }
+	    return items;
+	}
+	
+	public List<Item> viewItems(int sellerID) {
+	    String query = String.format("SELECT * FROM Items WHERE Status = 'Approved' AND SellerID = %d", sellerID);
+	    ResultSet rs = db.execQuery(query);
+	    List<Item> items = new ArrayList<>();
+	    try {
+	        while (rs.next()) {
+	            items.add(new Item(rs.getInt("ItemID"), rs.getInt("SellerID"), rs.getString("ItemName"),
+	                    rs.getString("Category"), rs.getString("Size"), rs.getDouble("Price"), 
+	                    rs.getString("Status"), rs.getString("DeclineReason")));
+	        }
+	    } catch (SQLException e) {
+	        e.printStackTrace();
+	    }
+	    return items;
 	}
 
 	private boolean validateItemDetails(Item item) {
