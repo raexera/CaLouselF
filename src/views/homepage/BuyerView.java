@@ -63,9 +63,10 @@ public class BuyerView {
 		Button wishlistButton = new Button("Add to Wishlist");
 		Button makeOfferButton = new Button("Offer Price");
 		Button viewWishlistButton = new Button("View Wishlist");
+		Button viewTransactionsHitoryButton = new Button("View Transactions History");
 		Button logoutButton = new Button("Logout");
 
-		buttonContainer.getChildren().addAll(buyButton, wishlistButton, makeOfferButton, viewWishlistButton);
+		buttonContainer.getChildren().addAll(buyButton, wishlistButton, makeOfferButton, viewWishlistButton, viewTransactionsHitoryButton);
 		logoutContainer.getChildren().addAll(logoutButton);
 		mainContainer.getChildren().addAll(headerLabel, itemTable, buttonContainer, logoutContainer);
 
@@ -73,6 +74,7 @@ public class BuyerView {
 		wishlistButton.setOnAction(e -> handleWishlistItem());
 		makeOfferButton.setOnAction(e -> handleMakeOfferItem());
 		viewWishlistButton.setOnAction(e -> handleViewWishlist());
+		viewTransactionsHitoryButton.setOnAction(e -> handleViewTrxHistory());
 		logoutButton.setOnAction(e -> handleLogout());
 
 		scene = new Scene(mainContainer, 800, 600);
@@ -267,6 +269,12 @@ public class BuyerView {
 		
 		WishlistView wishlistView = new WishlistView(stage, this.buyerId);
 		stage.setScene(wishlistView.getScene());
+		stage.show();
+	}
+	
+	private void handleViewTrxHistory() {
+		PurchaseHistoryView purchaseHistoryView = new PurchaseHistoryView(stage, this.buyerId);
+		stage.setScene(purchaseHistoryView.getScene());
 		stage.show();
 	}
 
