@@ -1,6 +1,7 @@
 package controller;
 
 import database.DatabaseConnector;
+import model.Item;
 import model.Transaction;
 
 import java.sql.ResultSet;
@@ -35,24 +36,35 @@ public class TransactionController {
 		System.out.println("Transaction created successfully. Item removed from wishlist if it existed.");
 	}
 
-	public List<Transaction> viewTransactionHistory(int buyerID) {
-		String query = String.format("SELECT t.TransactionID, t.BuyerID, t.ItemID, t.TotalPrice, t.CreatedAt, "
-				+ "i.ItemName, i.Category, i.Size " + "FROM Transactions t " + "JOIN Items i ON t.ItemID = i.ItemID "
-				+ "WHERE t.BuyerID = %d", buyerID);
+	
+	public List<Item> viewTransactionHistory(int buyerID) {
+		String query = String.format(
+		        "SELECT i.ItemID, i.ItemName, i.Category, i.Size, t.TotalPrice " +
+		        "FROM Transactions t " +
+		        "JOIN Items i ON t.ItemID = i.ItemID " +
+		        "WHERE t.BuyerID = %d", 
+		        buyerID
+		    );
 		ResultSet rs = db.execQuery(query);
-		List<Transaction> transactions = new ArrayList<>();
+		List<Item> items = new ArrayList<>();
 		try {
-			while (rs.next()) {
-				Transaction transaction = new Transaction(rs.getInt("TransactionID"), rs.getInt("BuyerID"),
-						rs.getInt("ItemID"), rs.getDouble("TotalPrice"));
-				System.out.printf("Transaction ID: %d, Item Name: %s, Category: %s, Size: %s, Price: %.2f, Date: %s%n",
-						transaction.getTransactionID(), rs.getString("ItemName"), rs.getString("Category"),
-						rs.getString("Size"), rs.getDouble("TotalPrice"), rs.getTimestamp("CreatedAt"));
-				transactions.add(transaction);
-			}
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
-		return transactions;
+	        while (rs.next()) {
+	            Item item = new Item(
+	                rs.getInt("ItemID"),
+	                0, // SellerID tidak relevan
+	                rs.getString("ItemName"),
+	                rs.getString("Category"),
+	                rs.getString("Size"),
+	                rs.getDouble("TotalPrice"),
+	                "Purchased", // Status default
+	                null // DeclineReason tidak relevan
+	            );
+	            items.add(item);
+	        }
+	    } catch (SQLException e) {
+	        e.printStackTrace();
+	    }
+		
+		return items;
 	}
 }
