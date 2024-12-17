@@ -19,6 +19,11 @@ import model.Offer;
 import views.auth.LoginView;
 
 public class SellerView {
+	
+	// buat testing seller:
+	// Username: seller1
+	// Password: @seller_12345
+	
 	private Stage stage;
 	private Scene scene;
 	private VBox mainContainer;
@@ -118,10 +123,20 @@ public class SellerView {
 		offerTable = new TableView<>();
 
 		TableColumn<Offer, Integer> offerIdColumn = new TableColumn<>("Offer ID");
+		offerIdColumn.setCellValueFactory(cellData -> new SimpleIntegerProperty(cellData.getValue().getOfferID()).asObject());
+		
 		TableColumn<Offer, Integer> itemIdColumn = new TableColumn<>("Item ID");
+		itemIdColumn.setCellValueFactory(cellData -> new SimpleIntegerProperty(cellData.getValue().getItemID()).asObject());
+		
 		TableColumn<Offer, Integer> buyerIdColumn = new TableColumn<>("Buyer ID");
+		buyerIdColumn.setCellValueFactory(cellData -> new SimpleIntegerProperty(cellData.getValue().getBuyerID()).asObject());
+
 		TableColumn<Offer, Double> priceColumn = new TableColumn<>("Offer Price");
+		priceColumn.setCellValueFactory(cellData -> new SimpleDoubleProperty(cellData.getValue().getOfferPrice()).asObject());
+		
 		TableColumn<Offer, String> statusColumn = new TableColumn<>("Status");
+		statusColumn.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getStatus()));
+
 
 		offerTable.getColumns().addAll(offerIdColumn, itemIdColumn, buyerIdColumn, priceColumn, statusColumn);
 

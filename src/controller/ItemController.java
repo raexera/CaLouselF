@@ -108,4 +108,54 @@ public class ItemController {
 		}
 		return true;
 	}
+	
+	// buat liat item di dashboard buyer 
+	public List<Item> viewItemsToBuy() {
+	    String query = String.format("SELECT * FROM Items WHERE Status = 'Approved'");
+	    ResultSet rs = db.execQuery(query);
+	    List<Item> items = new ArrayList<>();
+	    try {
+	        while (rs.next()) {
+	            items.add(new Item(rs.getInt("ItemID"), rs.getInt("SellerID"), rs.getString("ItemName"),
+	                    rs.getString("Category"), rs.getString("Size"), rs.getDouble("Price"), 
+	                    rs.getString("Status"), rs.getString("DeclineReason")));
+	        }
+	    } catch (SQLException e) {
+	        e.printStackTrace();
+	    }
+	    return items;
+	}
+	
+	// buat liat wishlist item di wishlist buyer
+	public List<Item> viewItemsWishlist(int buyerID) {
+	    
+	    String query = String.format(
+	            "SELECT i.ItemID, i.ItemName, i.Category, i.Size, i.Price " +
+	            "FROM wishlist w " +
+	            "JOIN items i ON w.ItemID = i.ItemID " +
+	            "WHERE w.BuyerID = %d", 
+	            buyerID
+	    );
+	    
+	    ResultSet rs = db.execQuery(query);
+	    List<Item> items = new ArrayList<>();
+	    try {
+	        while (rs.next()) {
+	            items.add(new Item(
+	                rs.getInt("ItemID"),
+	                0, // SellerID tidak diambil dari query, dan memiliki sifat not null
+	                rs.getString("ItemName"),
+	                rs.getString("Category"),
+	                rs.getString("Size"),
+	                rs.getDouble("Price"),
+	                null, // Status tidak diambil dari query
+	                null  // DeclineReason tidak diambil dari query
+	            ));
+	        }
+	    } catch (SQLException e) {
+	        e.printStackTrace();
+	    }
+	    return items;
+	    
+	    }
 }

@@ -70,7 +70,7 @@ public class OfferController {
 		System.out.println("Offer declined successfully.");
 	}
 
-	private double getHighestOffer(int itemID) {
+	public double getHighestOffer(int itemID) {
 		String query = String.format("SELECT MAX(OfferPrice) AS HighestOffer FROM Offers WHERE ItemID = %d", itemID);
 		ResultSet rs = db.execQuery(query);
 		try {
