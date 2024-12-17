@@ -1,6 +1,7 @@
 package views.homepage;
 
 import controller.ItemController;
+import controller.OfferController;
 import controller.UserController;
 import database.DatabaseConnector;
 import javafx.beans.property.SimpleObjectProperty;
@@ -19,9 +20,16 @@ import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import model.Item;
+import model.Offer;
 import views.auth.LoginView;
 
 public class BuyerView {
+	
+	// buat testing user:
+	// Username: user1
+	// Password: @user_12345
+	
+	
 	private Stage stage;
 	private Scene scene;
 	private VBox mainContainer;
@@ -47,20 +55,24 @@ public class BuyerView {
 		setupItemTable();
 
 		HBox buttonContainer = new HBox(10);
+		HBox logoutContainer = new HBox(10);
 		buttonContainer.setAlignment(Pos.CENTER);
+		logoutContainer.setAlignment(Pos.CENTER);
 
 		Button buyButton = new Button("Buy Item");
 		Button wishlistButton = new Button("Add to Wishlist");
 		Button makeOfferButton = new Button("Offer Price");
+		Button viewWishlistButton = new Button("View Wishlist");
 		Button logoutButton = new Button("Logout");
 
-		buttonContainer.getChildren().addAll(buyButton, wishlistButton, makeOfferButton, logoutButton);
-
-		mainContainer.getChildren().addAll(headerLabel, itemTable, buttonContainer);
+		buttonContainer.getChildren().addAll(buyButton, wishlistButton, makeOfferButton, viewWishlistButton);
+		logoutContainer.getChildren().addAll(logoutButton);
+		mainContainer.getChildren().addAll(headerLabel, itemTable, buttonContainer, logoutContainer);
 
 		buyButton.setOnAction(e -> handleBuyItem());
 		wishlistButton.setOnAction(e -> handleWishlistItem());
 		makeOfferButton.setOnAction(e -> handleMakeOfferItem());
+		viewWishlistButton.setOnAction(e -> handleViewWishlist());
 		logoutButton.setOnAction(e -> handleLogout());
 
 		scene = new Scene(mainContainer, 800, 600);
@@ -98,7 +110,7 @@ public class BuyerView {
 	
 	private void refreshItemList() {
 		itemTable.getItems().clear();
-		itemTable.getItems().addAll(itemController.viewPendingItems());
+		itemTable.getItems().addAll(itemController.viewItemsToBuy());
 	}
 
 	private void handleBuyItem() {
@@ -191,33 +203,24 @@ public class BuyerView {
 	}
 	
 	private void handleMakeOfferItem() {
-		/*
-		 1. Pop up muncul ketika ada item yang diselect dan tombol make offer ditekan
-		 2. Pop up dialog ini bakal minta input harga, (user mau negosiasi agar dapat harga lebih murah)
-		 3. Kalau kosong error label akan muncul dengan pesan input tidak boleh kosong
-		 4. Kalau harga sudah diinput maka data akan diinput ke tabel offers dimana perlu parameter ItemID, BuyerID, OfferPrice, Status, DeclineReason
-		 5. untuk status akan pending defaultnya, dan hanya akan berubah jika admin meng-accept atau meng-decline
-		 6. untuk decline reason defaultnya adalah "-" atau "N/A" dan hanya akan terisi jika admin men-decline
-		 */
-		
-		Item selectedItem = itemTable.getSelectionModel().getSelectedItem();
-		if (selectedItem == null) {
-			showAlert("Error", "Please select an item to make offer price.");
-			return;
-		}
-		
-		 // Membuat pop-up dialog untuk input harga
+	    // Ambil item yang dipilih
+	    Item selectedItem = itemTable.getSelectionModel().getSelectedItem();
+	    if (selectedItem == null) {
+	        showAlert("Error", "Please select an item to make an offer.");
+	        return;
+	    }
+
+	    // Membuat pop-up dialog untuk input harga
 	    TextInputDialog offerDialog = new TextInputDialog();
 	    offerDialog.setTitle("Make an Offer");
 	    offerDialog.setHeaderText(String.format("Make an offer for item: %s (ID: %d)", 
 	        selectedItem.getItemName(), 
 	        selectedItem.getItemID()));
 	    offerDialog.setContentText("Enter your offer price:");
-	    
-	 // Handle berdasarkan input user
+
+	    // Handle input dari user
 	    offerDialog.showAndWait().ifPresent(offerPriceStr -> {
 	        if (offerPriceStr.trim().isEmpty()) {
-	            // Jika input kosong
 	            showAlert("Error", "Offer price cannot be empty.");
 	            return;
 	        }
@@ -230,29 +233,41 @@ public class BuyerView {
 	                return;
 	            }
 
-	            // Insert data ke tabel offers
-	            String insertOfferQuery = String.format(
-	                "INSERT INTO Offers (ItemID, BuyerID, OfferPrice, Status, DeclineReason) " +
-	                "VALUES (%d, %d, %.2f, '%s', '%s')",
-	                selectedItem.getItemID(),
-	                this.buyerId,
-	                offerPrice,
-	                "Pending",
-	                "N/A"
-	            );
-	            DatabaseConnector.getInstance().execute(insertOfferQuery);
+	            // Buat objek Offer
+	            Offer newOffer = new Offer(0, selectedItem.getItemID(), this.buyerId, offerPrice, "Pending", "N/A");
 
-	            // Feedback ke user
+	            // Cek dengan OfferController
+	            OfferController offerController = OfferController.getInstance();
+//	            double currentHighestOffer = offerController.getHighestOffer(selectedItem.getItemID());
+//	            if (offerPrice <= currentHighestOffer) {
+//	                showAlert("Error", String.format("Your offer must be higher than the current highest offer of %.2f.", currentHighestOffer));
+//	                return;
+//	            }
+
+	            // Jika valid, masukkan ke database
+	            offerController.makeOffer(newOffer);
 	            showAlert("Success", "Your offer has been submitted. Status: Pending.");
+
 	        } catch (NumberFormatException e) {
-	            // Jika input bukan angka valid
 	            showAlert("Error", "Please enter a valid numeric offer price.");
 	        } catch (Exception e) {
-	            // Menangkap error lain
 	            e.printStackTrace();
 	            showAlert("Error", "An error occurred while submitting your offer.");
 	        }
 	    });
+	}
+
+	
+	private void handleViewWishlist() {
+		/*
+		 1. redirect ke wishlist page
+		 2. di wishlist page butuh user id buat access data wishlist user tersebut di table wishlist
+		 * 
+		*/
+		
+		WishlistView wishlistView = new WishlistView(stage, this.buyerId);
+		stage.setScene(wishlistView.getScene());
+		stage.show();
 	}
 
 	private void handleLogout() {
